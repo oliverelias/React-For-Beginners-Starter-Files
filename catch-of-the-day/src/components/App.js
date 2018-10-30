@@ -3,6 +3,7 @@ import Header from './Header';
 import Order from './Order';
 import Inventory from './Inventory';
 import Fish from './Fish';
+import base from '../base';
 import sampleFishes from '../sample-fishes';
 
 export default class App extends Component {
@@ -15,6 +16,32 @@ export default class App extends Component {
     this.addFish = this.addFish.bind(this);
     this.loadSamples = this.loadSamples.bind(this);
     this.addToOrder = this.addToOrder.bind(this);
+  }
+
+  componentWillMount() {
+    // This runs right before app is rendered
+    this.ref = base.syncState(`${this.props.match.params.storeId}/fishes`, {
+      context: this,
+      state: 'fishes',
+    });
+
+    // Check if order in localStorage
+    const localStorageRef = localStorage.getItem(`order-${this.props.match.params.storeId}`);
+    if (localStorageRef) {
+      this.setState({
+        order: JSON.parse(localStorageRef),
+      });
+    }
+  }
+  componentWillUnmount() {
+    base.removeBinding(this.ref);
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    localStorage.setItem(
+      `order-${this.props.match.params.storeId}`,
+      JSON.stringify(nextState.order)
+    );
   }
 
   addFish(fish) {
@@ -54,7 +81,7 @@ export default class App extends Component {
             ))}
           </ul>
         </div>
-        <Order fishes={this.state.fishes} order={this.state.order} />
+        <Order fishes={this.state.fishes} order={this.state.order} params={this.props.params} />
         <Inventory addFish={this.addFish} loadSamples={this.loadSamples} />
       </div>
     );
