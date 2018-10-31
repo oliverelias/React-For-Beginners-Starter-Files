@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { formatPrice } from '../helpers';
+import PropTypes from 'prop-types';
 
 export default class Order extends Component {
   constructor() {
@@ -57,3 +58,10 @@ export default class Order extends Component {
     );
   }
 }
+
+Order.propTypes = {
+  fishes: PropTypes.object.isRequired,
+  order: PropTypes.object.isRequired,
+  params: PropTypes.object,
+  removeFromOrder: PropTypes.func.isRequired,
+};
